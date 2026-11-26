@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Random Joke Generator</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background-color: white;
+
+            width: 90%;
+            max-width: 450px;
+
+            padding: 35px;
+
+            text-align: center;
+
+            border-radius: 15px;
+
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .emoji {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        #joke {
+            font-size: 18px;
+            color: #555;
+
+            line-height: 1.7;
+
+            min-height: 100px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            white-space: pre-line;
+
+            margin-bottom: 25px;
+        }
+
+        button {
+            background-color: #667eea;
+
+            color: white;
+
+            border: none;
+
+            padding: 13px 25px;
+
+            font-size: 16px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #4b5fc7;
+        }
+
+        button:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+        #status {
+            color: #888;
+            font-size: 13px;
+            margin-top: 18px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="emoji">😂</div>
+
+        <h1>Random Joke Generator</h1>
+
+        <p id="joke">
+            Click the button to get a random joke!
+        </p>
+
+        <button id="jokeBtn" onclick="getJoke()">
+            Get New Joke
+        </button>
+
+        <p id="status">Powered by JokeAPI</p>
+
+    </div>
+
+
+    <script>
+
+        async function getJoke() {
+
+            let jokeElement = document.getElementById("joke");
+
+            let button = document.getElementById("jokeBtn");
+
+            let status = document.getElementById("status");
+
+            // Show loading message
+            jokeElement.innerText = "Loading joke...";
+
+            button.disabled = true;
+
+            status.innerText = "Fetching a new joke...";
+
+            try {
+
+                // API request
+                let response = await fetch(
+                    "https://v2.jokeapi.dev/joke/Any?safe-mode"
+                );
+
+                // Check response
+                if (!response.ok) {
+                    throw new Error("API request failed");
+                }
+
+                // Convert response into JSON
+                let data = await response.json();
+
+                // Check API error
+                if (data.error) {
+                    throw new Error(data.message);
+                }
+
+                // Display joke
+                if (data.type === "single") {
+
+                    jokeElement.innerText = data.joke;
+
+                } else {
+
+                    jokeElement.innerText =
+                        data.setup + "\n\n" + data.delivery;
+
+                }
+
+                status.innerText = "Enjoy your joke! 😄";
+
+            }
+
+            catch (error) {
+
+                console.log("Error:", error);
+
+                jokeElement.innerText =
+                    "Unable to load joke. Please check your internet connection and try again.";
+
+                status.innerText = "Something went wrong!";
+
+            }
+
+            finally {
+
+                // Enable button again
+                button.disabled = false;
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>

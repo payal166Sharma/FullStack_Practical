@@ -1,0 +1,399 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>University Finder</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f5f9;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px #00000015;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        input {
+            flex: 1;
+            padding: 13px;
+            font-size: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+        }
+
+        button {
+            padding: 13px 25px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        button:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+        #message {
+            text-align: center;
+            color: #475569;
+            margin: 20px 0;
+        }
+
+        .result-heading {
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+
+        .university-list {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(260px, 1fr)
+            );
+            gap: 18px;
+        }
+
+        .university-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #00000012;
+            border-left: 4px solid #2563eb;
+        }
+
+        .university-card h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .university-card p {
+            color: #475569;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .university-card a {
+            color: #2563eb;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .university-card a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 500px) {
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🎓 University Finder</h1>
+
+        <p class="subtitle">
+            Find universities around the world
+        </p>
+
+
+        <!-- Search Section -->
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="country"
+                placeholder="Enter country (e.g. India)"
+            >
+
+            <button id="searchBtn" onclick="searchUniversities()">
+                Search
+            </button>
+
+        </div>
+
+
+        <!-- Message Section -->
+
+        <p id="message">
+            Enter a country name to find universities.
+        </p>
+
+
+        <!-- Result Heading -->
+
+        <h2 class="result-heading" id="resultHeading"></h2>
+
+
+        <!-- University Results -->
+
+        <div class="university-list" id="universityList">
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        async function searchUniversities() {
+
+            // Get elements
+            let countryInput = document.getElementById("country");
+
+            let message = document.getElementById("message");
+
+            let universityList =
+                document.getElementById("universityList");
+
+            let resultHeading =
+                document.getElementById("resultHeading");
+
+            let searchBtn =
+                document.getElementById("searchBtn");
+
+
+            // Get country name
+            let country = countryInput.value.trim();
+
+
+            // Validate input
+            if (country === "") {
+
+                message.innerText = "Please enter a country name.";
+
+                universityList.innerHTML = "";
+
+                resultHeading.innerText = "";
+
+                return;
+
+            }
+
+
+            // Clear previous results
+            universityList.innerHTML = "";
+
+            resultHeading.innerText = "";
+
+            message.innerText = "Loading universities...";
+
+            searchBtn.disabled = true;
+
+
+            try {
+
+                // API URL
+                let url =
+                    "http://universities.hipolabs.com/search?country="
+                    + encodeURIComponent(country);
+
+
+                // Fetch API data
+                let response = await fetch(url);
+
+
+                // Check response
+                if (!response.ok) {
+
+                    throw new Error("Unable to fetch data");
+
+                }
+
+
+                // Convert response into JSON
+                let universities = await response.json();
+
+
+                // Check whether universities exist
+                if (universities.length === 0) {
+
+                    message.innerText =
+                        "No universities found. Please check the country name.";
+
+                    return;
+
+                }
+
+
+                // Display result count
+                message.innerText =
+                    universities.length + " universities found!";
+
+                resultHeading.innerText =
+                    "Universities in " + country;
+
+
+                // Loop through universities
+                universities.forEach(function(university) {
+
+                    // Create card
+                    let card = document.createElement("div");
+
+                    card.className = "university-card";
+
+
+                    // University name
+                    let name = document.createElement("h3");
+
+                    name.innerText = university.name;
+
+
+                    // State / Province
+                    let state = document.createElement("p");
+
+                    state.innerText =
+                        "State / Province: " +
+                        (university["state-province"] || "Not available");
+
+
+                    // Website
+                    let website = document.createElement("p");
+
+                    let link = document.createElement("a");
+
+                    let websiteURL = university.web_pages &&
+                                     university.web_pages.length > 0
+                        ? university.web_pages[0]
+                        : "";
+
+
+                    if (websiteURL) {
+
+                        link.href = websiteURL;
+
+                        link.innerText = websiteURL;
+
+                        link.target = "_blank";
+
+                        link.rel = "noopener noreferrer";
+
+                    } else {
+
+                        link.innerText = "Not available";
+
+                    }
+
+
+                    website.innerText = "Website: ";
+
+                    website.appendChild(link);
+
+
+                    // Add elements to card
+                    card.appendChild(name);
+
+                    card.appendChild(state);
+
+                    card.appendChild(website);
+
+
+                    // Add card to webpage
+                    universityList.appendChild(card);
+
+                });
+
+            }
+
+
+            catch (error) {
+
+                console.log("Error:", error);
+
+                message.innerText =
+                    "Something went wrong! Please check your internet connection or try again later.";
+
+            }
+
+
+            finally {
+
+                searchBtn.disabled = false;
+
+            }
+
+        }
+
+
+        // Search when Enter key is pressed
+
+        document.getElementById("country").addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+
+                    searchUniversities();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

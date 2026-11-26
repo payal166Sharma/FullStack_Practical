@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chessboard</title>
+</head>
+
+<body>
+
+    <div id="chessboard"></div>
+
+    <script>
+
+        // Get chessboard container
+        let board = document.getElementById("chessboard");
+
+        // Apply CSS using JavaScript
+        board.style.display = "grid";
+        board.style.gridTemplateColumns = "repeat(8, 60px)";
+        board.style.gridTemplateRows = "repeat(8, 60px)";
+        board.style.width = "480px";
+        board.style.border = "3px solid black";
+        board.style.margin = "50px auto";
+
+        // Chess pieces
+        let pieces = [
+            ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"],
+            ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
+            ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"]
+        ];
+
+        // Create 64 boxes dynamically
+        for (let row = 0; row < 8; row++) {
+
+            for (let col = 0; col < 8; col++) {
+
+                // Create div element
+                let cell = document.createElement("div");
+
+                // Apply width and height
+                cell.style.width = "60px";
+                cell.style.height = "60px";
+
+                // Apply chessboard colors
+                if ((row + col) % 2 === 0) {
+                    cell.style.backgroundColor = "#f0d9b5";
+                } 
+                else {
+                    cell.style.backgroundColor = "#b58863";
+                }
+
+                // Center chess pieces
+                cell.style.display = "flex";
+                cell.style.justifyContent = "center";
+                cell.style.alignItems = "center";
+
+                cell.style.fontSize = "40px";
+                cell.style.cursor = "pointer";
+
+                // Add chess pieces
+                cell.textContent = pieces[row][col];
+
+                // Add cell to chessboard
+                board.appendChild(cell);
+            }
+        }
+
+    </script>
+
+</body>
+</html>
